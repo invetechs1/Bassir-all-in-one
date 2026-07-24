@@ -1,30 +1,23 @@
 [
   {
-    "name": "Bassir POS",
+    "name": "Bassir Stock System",
     "url": "",
-    "icon": "🛒",
-    "description": "Point of sale system — example entry, edit it in Manage Systems.",
+    "icon": "📦",
+    "description": "Stock and inventory management. Set its URL in Manage Systems.",
     "color": "#2a78d6"
   },
   {
-    "name": "Bassir Accounting",
+    "name": "Bassir BOQ & Project Tracking",
     "url": "",
-    "icon": "📒",
-    "description": "Accounting and finance — example entry, edit it in Manage Systems.",
+    "icon": "🏗️",
+    "description": "Bill of quantities and project tracking. Set its URL in Manage Systems.",
     "color": "#eb6834"
   },
   {
-    "name": "Bassir Inventory",
+    "name": "Bassir Technical & Financial Proposal",
     "url": "",
-    "icon": "📦",
-    "description": "Stock and warehouse — example entry, edit it in Manage Systems.",
+    "icon": "📑",
+    "description": "Technical and financial proposals. Set its URL in Manage Systems.",
     "color": "#1baf7a"
-  },
-  {
-    "name": "Bassir HR",
-    "url": "",
-    "icon": "👥",
-    "description": "Human resources — example entry, edit it in Manage Systems.",
-    "color": "#eda100"
   }
 ]

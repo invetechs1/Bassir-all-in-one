@@ -32,10 +32,11 @@ Then open <http://localhost:3000>. To use a different port:
 
 ## First-time setup
 
-The portal starts with four example systems. Go to **Manage Systems**, edit
-each one (or delete them and add your own) and set the real URL of every
-Bassir system. From then on, one click on the dashboard takes you to that
-system's login page.
+The portal starts pre-loaded with the Bassir systems: **Stock System**,
+**BOQ & Project Tracking**, and **Technical & Financial Proposal**. Go to
+**Manage Systems**, set the real URL of each one, and add any other Bassir
+system the same way. From then on, one click on the dashboard takes you to
+that system's login page.
 
 ## Where data is stored
 
