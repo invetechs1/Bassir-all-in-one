@@ -11,6 +11,10 @@ const SEED_FILE = path.join(__dirname, 'seed', 'systems.json');
 const CLICK_RETENTION_DAYS = 365;
 const STATUS_CACHE_MS = 60 * 1000;
 const STATUS_TIMEOUT_MS = 6000;
+const METRICS_CACHE_MS = 5 * 60 * 1000;
+const METRICS_TIMEOUT_MS = 8000;
+const SNAPSHOT_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const SNAPSHOT_RETENTION_DAYS = 400;
 
 // ---------------------------------------------------------------------------
 // Storage (single JSON file — no external database needed)
@@ -37,6 +41,7 @@ function saveDb(db) {
 }
 
 let db = loadDb();
+db.snapshots = db.snapshots || [];
 
 function pruneOldClicks() {
   const cutoff = Date.now() - CLICK_RETENTION_DAYS * 86400000;
@@ -79,6 +84,97 @@ async function checkSystem(system) {
 }
 
 // ---------------------------------------------------------------------------
+// Business metrics pulled from inside each system (see METRICS_SPEC.md)
+// ---------------------------------------------------------------------------
+
+const metricsCache = new Map(); // systemId -> { fetchedAt, ok, data | error }
+
+function normalizeMetrics(raw) {
+  if (!raw || typeof raw !== 'object' || typeof raw.users !== 'object' || raw.users === null) {
+    return null;
+  }
+  const num = (v) => (typeof v === 'number' && isFinite(v) ? v : null);
+  return {
+    generatedAt: typeof raw.generatedAt === 'string' ? raw.generatedAt : null,
+    users: {
+      total: num(raw.users.total),
+      activeToday: num(raw.users.activeToday),
+      activeThisWeek: num(raw.users.activeThisWeek),
+      activeThisMonth: num(raw.users.activeThisMonth)
+    },
+    kpis: Array.isArray(raw.kpis)
+      ? raw.kpis.slice(0, 24).map((k) => ({
+          key: String(k.key || '').slice(0, 60),
+          label: String(k.label || k.key || '').slice(0, 80),
+          value: typeof k.value === 'number' && isFinite(k.value) ? k.value : String(k.value ?? '').slice(0, 60),
+          unit: String(k.unit || '').slice(0, 20)
+        }))
+      : []
+  };
+}
+
+async function fetchMetrics(system, { force = false } = {}) {
+  if (!system.metricsUrl) {
+    return { ok: false, error: 'not_configured', fetchedAt: Date.now() };
+  }
+  const cached = metricsCache.get(system.id);
+  if (!force && cached && Date.now() - cached.fetchedAt < METRICS_CACHE_MS) return cached;
+
+  let result;
+  try {
+    const headers = { Accept: 'application/json' };
+    if (system.metricsKey) headers.Authorization = `Bearer ${system.metricsKey}`;
+    const res = await fetch(system.metricsUrl, {
+      headers,
+      redirect: 'follow',
+      signal: AbortSignal.timeout(METRICS_TIMEOUT_MS)
+    });
+    if (!res.ok) {
+      result = { ok: false, error: `http_${res.status}` };
+    } else {
+      const data = normalizeMetrics(await res.json());
+      result = data ? { ok: true, data } : { ok: false, error: 'invalid_format' };
+    }
+  } catch {
+    result = { ok: false, error: 'unreachable' };
+  }
+  result.fetchedAt = Date.now();
+  metricsCache.set(system.id, result);
+  return result;
+}
+
+function todayKey() {
+  const now = new Date();
+  return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
+    .toISOString()
+    .slice(0, 10);
+}
+
+// One snapshot per system per day powers the history charts. The latest fetch
+// of the day wins, so numbers converge to end-of-day values.
+async function takeSnapshots() {
+  let changed = false;
+  const date = todayKey();
+  for (const system of db.systems) {
+    if (!system.metricsUrl) continue;
+    const result = await fetchMetrics(system);
+    if (!result.ok) continue;
+    const existing = db.snapshots.find((s) => s.systemId === system.id && s.date === date);
+    const snap = { systemId: system.id, date, ts: Date.now(), users: result.data.users, kpis: result.data.kpis };
+    if (existing) Object.assign(existing, snap);
+    else db.snapshots.push(snap);
+    changed = true;
+  }
+  const cutoffDate = new Date(Date.now() - SNAPSHOT_RETENTION_DAYS * 86400000).toISOString().slice(0, 10);
+  const before = db.snapshots.length;
+  db.snapshots = db.snapshots.filter((s) => s.date >= cutoffDate);
+  if (changed || db.snapshots.length !== before) saveDb(db);
+}
+
+setTimeout(takeSnapshots, 5000);
+setInterval(takeSnapshots, SNAPSHOT_INTERVAL_MS);
+
+// ---------------------------------------------------------------------------
 // API
 // ---------------------------------------------------------------------------
 
@@ -110,13 +206,19 @@ function validateSystemInput(body) {
   if (url && !/^https?:\/\//i.test(url)) {
     return { error: 'URL must start with http:// or https://' };
   }
+  const metricsUrl = String(body.metricsUrl || '').trim();
+  if (metricsUrl && !/^https?:\/\//i.test(metricsUrl)) {
+    return { error: 'Metrics URL must start with http:// or https://' };
+  }
   return {
     value: {
       name,
       url,
       icon: String(body.icon || '🖥️').trim().slice(0, 300),
       description: String(body.description || '').trim().slice(0, 300),
-      color: /^#[0-9a-f]{6}$/i.test(body.color || '') ? body.color : '#2a78d6'
+      color: /^#[0-9a-f]{6}$/i.test(body.color || '') ? body.color : '#2a78d6',
+      metricsUrl,
+      metricsKey: String(body.metricsKey || '').trim().slice(0, 200)
     }
   };
 }
@@ -137,6 +239,7 @@ app.put('/api/systems/:id', (req, res) => {
   if (error) return res.status(400).json({ error });
   Object.assign(system, value);
   statusCache.delete(system.id);
+  metricsCache.delete(system.id);
   saveDb(db);
   res.json(publicSystem(system));
 });
@@ -146,7 +249,9 @@ app.delete('/api/systems/:id', (req, res) => {
   if (idx === -1) return res.status(404).json({ error: 'System not found.' });
   const [removed] = db.systems.splice(idx, 1);
   db.clicks = db.clicks.filter((c) => c.systemId !== removed.id);
+  db.snapshots = db.snapshots.filter((s) => s.systemId !== removed.id);
   statusCache.delete(removed.id);
+  metricsCache.delete(removed.id);
   saveDb(db);
   res.json({ ok: true });
 });
@@ -157,6 +262,34 @@ app.post('/api/systems/:id/click', (req, res) => {
   db.clicks.push({ systemId: system.id, ts: Date.now() });
   saveDb(db);
   res.json({ ok: true, url: system.url });
+});
+
+// Live business metrics for every system (used by the Business Data page).
+app.get('/api/metrics', async (req, res) => {
+  const force = req.query.refresh === '1';
+  const entries = await Promise.all(
+    db.systems.map(async (s) => [
+      s.id,
+      { system: { id: s.id, name: s.name, icon: s.icon, color: s.color }, ...(await fetchMetrics(s, { force })) }
+    ])
+  );
+  res.json(Object.fromEntries(entries));
+});
+
+// Daily snapshots for the history charts.
+app.get('/api/metrics/history', (req, res) => {
+  const days = Math.min(Math.max(parseInt(req.query.days, 10) || 30, 1), 365);
+  const cutoff = new Date(Date.now() - (days - 1) * 86400000).toISOString().slice(0, 10);
+  const bySystem = {};
+  for (const snap of db.snapshots) {
+    if (snap.date < cutoff) continue;
+    (bySystem[snap.systemId] = bySystem[snap.systemId] || []).push({
+      date: snap.date,
+      users: snap.users
+    });
+  }
+  for (const list of Object.values(bySystem)) list.sort((a, b) => a.date.localeCompare(b.date));
+  res.json({ days, bySystem });
 });
 
 app.get('/api/analytics', (req, res) => {

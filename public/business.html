@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Business Data — Bassir All-in-One</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="logo">B</span> Bassir All-in-One</a>
+    <nav class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/business.html" class="active">Business Data</a>
+      <a href="/analytics.html">Analytics</a>
+      <a href="/admin.html">Manage Systems</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="page-title">Business data</h1>
+    <p class="page-subtitle">Live numbers pulled from inside each Bassir system: how many users it has, who is active, and its key business figures.</p>
+
+    <div class="filter-row" id="range-filter" role="group" aria-label="History range">
+      <button data-days="14">Last 14 days</button>
+      <button data-days="30" class="active">Last 30 days</button>
+      <button data-days="90">Last 90 days</button>
+      <button id="refresh-btn" style="margin-left:auto">↻ Refresh now</button>
+    </div>
+
+    <div id="systems"></div>
+  </main>
+
+  <div class="viz-tooltip" id="tooltip"></div>
+  <footer>Bassir All-in-One portal</footer>
+  <script src="/js/charts.js"></script>
+  <script src="/js/business.js"></script>
+</body>
+</html>

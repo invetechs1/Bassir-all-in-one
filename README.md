@@ -11,6 +11,12 @@ username and password there. The portal also tracks usage and shows analytics.
   system's login page in a new tab.
 - **Manage Systems** — add, edit or delete systems: name, URL, icon (any emoji
   or an image/logo URL), tile color and description. No code changes needed.
+- **Business Data** — live numbers pulled from inside each Bassir system:
+  total users, active users (today / this week / this month), each system's
+  own business KPIs (e.g. stock value, active projects, proposals in
+  progress), and an active-users-per-day history chart. Each system connects
+  by exposing one small JSON endpoint — the exact contract, example code and
+  SQL are in [`METRICS_SPEC.md`](METRICS_SPEC.md).
 - **Analytics** — opens per day, opens per system, opens today / this period /
   all time, and last-opened times, filterable by 7 / 14 / 30 / 90 days.
 - **Live status** — the portal pings each system's URL and shows an
@@ -51,6 +57,13 @@ changes are required for either:
    `url`. This file is only used once, to create `data/db.json` on the first
    start. If the portal has already been started, either edit through the UI
    or delete `data/db.json` and restart to re-seed.
+
+To light up the **Business Data** page, add the metrics endpoint described in
+[`METRICS_SPEC.md`](METRICS_SPEC.md) to each Bassir system and enter its
+Metrics URL (and API key, if used) in Manage Systems. You can try the page
+first with the included mock: `node examples/mock-metrics-server.js 4001`,
+then set a system's Metrics URL to
+`http://localhost:4001/api/bassir-metrics`.
 
 Deployment notes:
 

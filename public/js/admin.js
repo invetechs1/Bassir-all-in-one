@@ -10,7 +10,9 @@ const fields = {
   url: document.getElementById('f-url'),
   icon: document.getElementById('f-icon'),
   color: document.getElementById('f-color'),
-  description: document.getElementById('f-desc')
+  description: document.getElementById('f-desc'),
+  metricsUrl: document.getElementById('f-metrics-url'),
+  metricsKey: document.getElementById('f-metrics-key')
 };
 
 let editingId = null;
@@ -25,6 +27,8 @@ function setEditing(system) {
   fields.icon.value = system ? system.icon : '';
   fields.color.value = system ? system.color : '#2a78d6';
   fields.description.value = system ? system.description : '';
+  fields.metricsUrl.value = system ? (system.metricsUrl || '') : '';
+  fields.metricsKey.value = system ? (system.metricsKey || '') : '';
   errorEl.hidden = true;
   if (system) fields.name.focus();
 }
@@ -38,7 +42,9 @@ form.addEventListener('submit', async (e) => {
     url: fields.url.value,
     icon: fields.icon.value,
     color: fields.color.value,
-    description: fields.description.value
+    description: fields.description.value,
+    metricsUrl: fields.metricsUrl.value,
+    metricsKey: fields.metricsKey.value
   };
   const res = await fetch(editingId ? `/api/systems/${editingId}` : '/api/systems', {
     method: editingId ? 'PUT' : 'POST',

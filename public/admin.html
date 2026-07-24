@@ -12,6 +12,7 @@
     <a class="brand" href="/"><span class="logo">B</span> Bassir All-in-One</a>
     <nav class="nav">
       <a href="/">Dashboard</a>
+      <a href="/business.html">Business Data</a>
       <a href="/analytics.html">Analytics</a>
       <a href="/admin.html" class="active">Manage Systems</a>
     </nav>
@@ -43,6 +44,14 @@
         <div class="full">
           <label for="f-desc">Description (optional)</label>
           <input id="f-desc" type="text" placeholder="Short description shown on the dashboard">
+        </div>
+        <div>
+          <label for="f-metrics-url">Metrics URL (optional — powers Business Data)</label>
+          <input id="f-metrics-url" type="url" placeholder="https://stock.example.com/api/bassir-metrics">
+        </div>
+        <div>
+          <label for="f-metrics-key">Metrics API key (optional)</label>
+          <input id="f-metrics-key" type="text" placeholder="Sent as Authorization: Bearer …">
         </div>
         <div class="full" style="display:flex; gap:10px;">
           <button class="btn" type="submit" id="submit-btn">Add system</button>
