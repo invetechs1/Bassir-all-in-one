@@ -1,0 +1,15 @@
+{
+  "name": "bassir-all-in-one",
+  "version": "1.0.0",
+  "description": "Bassir All-in-One portal: one place to access every Bassir system, with usage analytics and live status.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

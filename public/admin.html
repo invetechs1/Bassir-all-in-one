@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Systems — Bassir All-in-One</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="logo">B</span> Bassir All-in-One</a>
+    <nav class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/analytics.html">Analytics</a>
+      <a href="/admin.html" class="active">Manage Systems</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="page-title">Manage systems</h1>
+    <p class="page-subtitle">Add each Bassir system here: its name, address (URL) and an icon. It will then appear on the dashboard.</p>
+
+    <div class="card">
+      <h2 id="form-title">Add a system</h2>
+      <form id="system-form" class="form-grid">
+        <div>
+          <label for="f-name">Name</label>
+          <input id="f-name" type="text" required placeholder="e.g. Bassir POS">
+        </div>
+        <div>
+          <label for="f-url">URL (system address)</label>
+          <input id="f-url" type="url" placeholder="https://pos.example.com">
+        </div>
+        <div>
+          <label for="f-icon">Icon (emoji or image URL)</label>
+          <input id="f-icon" type="text" placeholder="🛒 or https://…/logo.png">
+        </div>
+        <div>
+          <label for="f-color">Tile color</label>
+          <input id="f-color" type="color" value="#2a78d6">
+        </div>
+        <div class="full">
+          <label for="f-desc">Description (optional)</label>
+          <input id="f-desc" type="text" placeholder="Short description shown on the dashboard">
+        </div>
+        <div class="full" style="display:flex; gap:10px;">
+          <button class="btn" type="submit" id="submit-btn">Add system</button>
+          <button class="btn secondary" type="button" id="cancel-btn" hidden>Cancel edit</button>
+        </div>
+        <p class="form-error full" id="form-error" hidden></p>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Your systems</h2>
+      <div id="list"></div>
+    </div>
+  </main>
+
+  <footer>Bassir All-in-One portal</footer>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

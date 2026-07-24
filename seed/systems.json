@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Bassir POS",
+    "url": "",
+    "icon": "🛒",
+    "description": "Point of sale system — example entry, edit it in Manage Systems.",
+    "color": "#2a78d6"
+  },
+  {
+    "name": "Bassir Accounting",
+    "url": "",
+    "icon": "📒",
+    "description": "Accounting and finance — example entry, edit it in Manage Systems.",
+    "color": "#eb6834"
+  },
+  {
+    "name": "Bassir Inventory",
+    "url": "",
+    "icon": "📦",
+    "description": "Stock and warehouse — example entry, edit it in Manage Systems.",
+    "color": "#1baf7a"
+  },
+  {
+    "name": "Bassir HR",
+    "url": "",
+    "icon": "👥",
+    "description": "Human resources — example entry, edit it in Manage Systems.",
+    "color": "#eda100"
+  }
+]

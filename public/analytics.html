@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analytics — Bassir All-in-One</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="logo">B</span> Bassir All-in-One</a>
+    <nav class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/analytics.html" class="active">Analytics</a>
+      <a href="/admin.html">Manage Systems</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="page-title">Analytics</h1>
+    <p class="page-subtitle">How your Bassir systems are being used from this portal.</p>
+
+    <div class="filter-row" id="range-filter" role="group" aria-label="Date range">
+      <button data-days="7">Last 7 days</button>
+      <button data-days="14" class="active">Last 14 days</button>
+      <button data-days="30">Last 30 days</button>
+      <button data-days="90">Last 90 days</button>
+    </div>
+
+    <div class="stat-row" id="stats"></div>
+
+    <div class="card chart-card">
+      <h2>Opens per day <span class="hint" id="daily-hint"></span></h2>
+      <div id="daily-chart"></div>
+      <details class="table-view">
+        <summary>View as table</summary>
+        <table class="data-table" id="daily-table"></table>
+      </details>
+    </div>
+
+    <div class="card chart-card">
+      <h2>Opens per system <span class="hint" id="system-hint"></span></h2>
+      <div id="system-bars"></div>
+    </div>
+
+    <div class="card">
+      <h2>System details</h2>
+      <table class="data-table" id="system-table"></table>
+    </div>
+  </main>
+
+  <div class="viz-tooltip" id="tooltip"></div>
+  <footer>Bassir All-in-One portal</footer>
+  <script src="/js/analytics.js"></script>
+</body>
+</html>
