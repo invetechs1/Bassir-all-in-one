@@ -1,21 +1,21 @@
 [
   {
     "name": "Bassir Stock System",
-    "url": "",
+    "url": "http://13.140.138.252:8085/",
     "icon": "📦",
     "description": "Stock and inventory management. Set its URL in Manage Systems.",
     "color": "#2a78d6"
   },
   {
     "name": "Bassir BOQ & Project Tracking",
-    "url": "",
+    "url": "http://13.140.138.252:3005/",
     "icon": "🏗️",
     "description": "Bill of quantities and project tracking. Set its URL in Manage Systems.",
     "color": "#eb6834"
   },
   {
     "name": "Bassir Technical & Financial Proposal",
-    "url": "",
+    "url": "http://13.140.138.252:8003/",
     "icon": "📑",
     "description": "Technical and financial proposals. Set its URL in Manage Systems.",
     "color": "#1baf7a"
