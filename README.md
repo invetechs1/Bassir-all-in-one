@@ -23,6 +23,10 @@ username and password there. The portal also tracks usage and shows analytics.
   Online / Offline dot on every tile (any HTTP answer, including a login wall,
   counts as online).
 - Light and dark mode follow your operating system setting automatically.
+- **Mobile app (iOS & Android)** — a React Native app in [`mobile/`](mobile/)
+  with the same features (open systems, business data, analytics, manage),
+  talking to this same server. Build and deployment instructions are in
+  [`mobile/README.md`](mobile/README.md).
 
 ## Running it
 

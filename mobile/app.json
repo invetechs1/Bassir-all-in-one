@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Bassir All-in-One",
+    "slug": "bassir-all-in-one",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2a78d6"
+    },
+    "ios": {
+      "bundleIdentifier": "com.bassir.allinone",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "package": "com.bassir.allinone",
+      "usesCleartextTraffic": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2a78d6"
+      }
+    }
+  }
+}
