@@ -79,7 +79,7 @@ body {
   font-size: 17px;
 }
 
-.nav { display: flex; gap: 4px; margin-left: auto; }
+.nav { display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
 
 .nav a {
   text-decoration: none;
@@ -88,6 +88,7 @@ body {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .nav a:hover { background: var(--ghost-hover); }

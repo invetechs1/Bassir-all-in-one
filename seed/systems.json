@@ -3,21 +3,49 @@
     "name": "Bassir Stock System",
     "url": "http://13.140.138.252:8085/",
     "icon": "📦",
-    "description": "Stock and inventory management. Set its URL in Manage Systems.",
+    "description": "Stock and inventory management across all warehouses.",
     "color": "#2a78d6"
   },
   {
     "name": "Bassir BOQ & Project Tracking",
     "url": "http://13.140.138.252:3005/",
     "icon": "🏗️",
-    "description": "Bill of quantities and project tracking. Set its URL in Manage Systems.",
+    "description": "Bill of quantities and project tracking for ongoing projects.",
     "color": "#eb6834"
   },
   {
     "name": "Bassir Technical & Financial Proposal",
     "url": "http://13.140.138.252:8003/",
     "icon": "📑",
-    "description": "Technical and financial proposals. Set its URL in Manage Systems.",
+    "description": "Technical and financial proposals, including pricing.",
     "color": "#1baf7a"
+  },
+  {
+    "name": "Bassir Employee Training System",
+    "url": "http://13.140.138.252:3860/",
+    "icon": "🎓",
+    "description": "Employee training courses and progress tracking.",
+    "color": "#7c4dff"
+  },
+  {
+    "name": "Bassir Hiring System",
+    "url": "http://13.140.138.252:8083/",
+    "icon": "🤝",
+    "description": "Recruitment and hiring pipeline management.",
+    "color": "#c9a227"
+  },
+  {
+    "name": "Bassir Owner Eyes",
+    "url": "http://bassir-owner-eyes.bassir.net/",
+    "icon": "👁️",
+    "description": "Executive overview of all Bassir systems and performance.",
+    "color": "#14213d"
+  },
+  {
+    "name": "Bassir Companies Social Media",
+    "url": "http://companies-sms.bassir.net/",
+    "icon": "📣",
+    "description": "Social media management for all Bassir companies.",
+    "color": "#06b6d4"
   }
 ]
