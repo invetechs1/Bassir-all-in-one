@@ -28,6 +28,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#2a78d6"
       }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a7c3c2e7-76ad-4e13-80da-9884277c629a"
+      }
     }
   }
 }
