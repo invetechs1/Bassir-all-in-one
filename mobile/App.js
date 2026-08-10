@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, SafeAreaView, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { getServerUrl } from './src/api';
+import { getServerUrl, api } from './src/api';
 import { useTheme } from './src/theme';
 import DashboardScreen from './src/screens/DashboardScreen';
 import BusinessScreen from './src/screens/BusinessScreen';
 import AnalyticsScreen from './src/screens/AnalyticsScreen';
 import ManageScreen from './src/screens/ManageScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import LoginScreen from './src/screens/LoginScreen';
 
 const TABS = [
   { key: 'dashboard', label: 'Systems', icon: '🧭', title: 'Your Bassir systems' },
@@ -22,16 +23,48 @@ export default function App() {
   const [tab, setTab] = useState('dashboard');
   const [ready, setReady] = useState(false);
   const [configured, setConfigured] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    getServerUrl().then((url) => {
+    getServerUrl().then(async (url) => {
       setConfigured(!!url);
-      if (!url) setTab('settings');
-      setReady(true);
+      if (!url) {
+        setReady(true);
+      } else {
+        try {
+          await api('/api/systems');
+          setAuthenticated(true);
+        } catch (e) {
+          if (e.status === 401) {
+            setAuthenticated(false);
+          } else {
+            setAuthenticated(false);
+          }
+        }
+        setReady(true);
+      }
     });
   }, []);
 
   if (!ready) return <View style={{ flex: 1, backgroundColor: t.page }} />;
+
+  if (!authenticated) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: t.page,
+          paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0
+        }}
+      >
+        <StatusBar style="auto" />
+        <LoginScreen onLogin={() => {
+          setConfigured(true);
+          setAuthenticated(true);
+        }} />
+      </SafeAreaView>
+    );
+  }
 
   const active = TABS.find((x) => x.key === tab);
 
@@ -81,6 +114,10 @@ export default function App() {
           <SettingsScreen
             onSaved={() => {
               setConfigured(true);
+              setTab('dashboard');
+            }}
+            onLogout={() => {
+              setAuthenticated(false);
               setTab('dashboard');
             }}
           />

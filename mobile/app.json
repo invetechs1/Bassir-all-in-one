@@ -16,6 +16,7 @@
       "bundleIdentifier": "com.bassir.allinone",
       "supportsTablet": true,
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
         }

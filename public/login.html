@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — Bassir All-in-One</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+  <style>
+    .login-wrap {
+      min-height: calc(100vh - 60px);
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+    .login-card { width: 100%; max-width: 360px; }
+    .login-card .brand-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 22px; justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand"><span class="logo">B</span> Bassir All-in-One</span>
+  </header>
+
+  <div class="login-wrap">
+    <div class="card login-card">
+      <h2 style="text-align:center; margin-top:0;">Sign in</h2>
+      <form id="login-form">
+        <div style="margin-bottom:14px;">
+          <label for="f-username">Username</label>
+          <input id="f-username" type="text" autocomplete="username" required autofocus>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label for="f-password">Password</label>
+          <input id="f-password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn" type="submit" style="width:100%;">Sign in</button>
+        <p class="form-error" id="login-error" hidden></p>
+      </form>
+    </div>
+  </div>
+
+  <footer>Bassir All-in-One portal</footer>
+  <script src="/js/login.js"></script>
+</body>
+</html>

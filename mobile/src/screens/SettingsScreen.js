@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TextInput } from 'react-native';
-import { getServerUrl, setServerUrl } from '../api';
+import { getServerUrl, setServerUrl, api } from '../api';
 import { useTheme } from '../theme';
 import { Card, Button } from '../components';
 
-export default function SettingsScreen({ onSaved }) {
+export default function SettingsScreen({ onSaved, onLogout }) {
   const t = useTheme();
   const [url, setUrl] = useState('');
   const [testResult, setTestResult] = useState(null);
   const [testing, setTesting] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     getServerUrl().then((u) => setUrl(u || ''));
@@ -37,6 +38,18 @@ export default function SettingsScreen({ onSaved }) {
       });
     } finally {
       setTesting(false);
+    }
+  }
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await api('/api/logout', { method: 'POST' });
+    } catch (e) {
+      // Proceed to local logout even if server fails
+    } finally {
+      setLoggingOut(false);
+      if (onLogout) onLogout();
     }
   }
 
@@ -80,6 +93,16 @@ export default function SettingsScreen({ onSaved }) {
             {testResult.message}
           </Text>
         ) : null}
+      </Card>
+
+      <Card style={{ gap: 8 }}>
+        <Text style={{ color: t.textPrimary, fontSize: 16, fontWeight: '700' }}>Account</Text>
+        <Button 
+          title={loggingOut ? 'Logging out…' : 'Log out'} 
+          onPress={handleLogout} 
+          disabled={loggingOut} 
+          kind="danger" 
+        />
       </Card>
 
       <Card style={{ gap: 8 }}>

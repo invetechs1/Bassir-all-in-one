@@ -4,7 +4,8 @@ function iconEl(system, cls = 'system-icon') {
   const el = document.createElement('div');
   el.className = cls;
   el.style.background = system.color || '#2a78d6';
-  if (/^https?:\/\//i.test(system.icon || '') || (system.icon || '').startsWith('data:image')) {
+  const icon = system.icon || '';
+  if (/^https?:\/\//i.test(icon) || icon.startsWith('data:image') || icon.startsWith('/')) {
     const img = document.createElement('img');
     img.src = system.icon;
     img.alt = '';
@@ -27,16 +28,17 @@ function relativeTime(ts) {
 }
 
 async function openSystem(system) {
-  // Open the tab synchronously so popup blockers allow it, then record the click.
-  const win = system.url ? window.open(system.url, '_blank', 'noopener') : null;
+  if (!system.url) {
+    alert(`"${system.name}" has no URL yet.\nAdd its address in Manage Systems first.`);
+    return;
+  }
+  // 'noopener' makes window.open() always return null by design, so it can't
+  // be used to detect a blocked popup — don't fall back to location.href on
+  // it, or every successful open would also navigate this tab away.
+  window.open(system.url, '_blank', 'noopener');
   try {
     await fetch(`/api/systems/${system.id}/click`, { method: 'POST' });
   } catch { /* analytics failure must not block access */ }
-  if (!system.url) {
-    alert(`"${system.name}" has no URL yet.\nAdd its address in Manage Systems first.`);
-  } else if (!win) {
-    location.href = system.url;
-  }
 }
 
 function render(systems, statuses) {
