@@ -47,6 +47,42 @@ For internal distribution without stores: `eas build --platform android
 --profile preview` gives an `.apk` you can install directly on company phones,
 and iOS ad-hoc builds work via `eas device:create` + a preview build.
 
+## Troubleshooting iOS builds
+
+**"Authentication with Apple Developer Portal failed" / "Verification codes
+can't be sent to this phone number" / Apple internal server error** — this is
+an Apple-side failure while EAS logs in to the Apple account (usually 2FA SMS
+delivery or an App Store Connect outage), not an app problem. Fixes, in order
+of preference:
+
+1. **Don't log in to Apple for the build at all.** Once remote iOS
+   credentials exist on Expo's servers (the log says
+   `Using remote iOS credentials (Expo server)`), answer **No** to
+   "Do you want to log in to your Apple account?" and run the build without
+   `--auto-submit`:
+   ```bash
+   eas build --platform ios
+   ```
+2. **Submit with an App Store Connect API key instead of an Apple ID login**
+   (removes 2FA from the pipeline permanently). In App Store Connect →
+   Users and Access → Integrations → App Store Connect API, generate a key
+   with the *App Manager* role and download the `.p8` file, then:
+   ```bash
+   eas submit --platform ios
+   ```
+   and choose the API-key option when prompted (or configure
+   `ascApiKeyPath` / `ascApiKeyId` / `ascApiKeyIssuerId` in `eas.json`'s
+   submit profile). Keep the `.p8` out of git.
+3. **If interactive login is needed anyway:** retry later (Apple errors are
+   usually transient), and when asked for a verification code use a code from
+   a trusted Apple device (iPhone/iPad/Mac: Settings → Apple ID → Sign-In &
+   Security → Two-Factor Authentication → Get Verification Code) instead of
+   SMS. See https://expo.fyi/apple-2fa-sms-issues-workaround.
+
+The yellow "app uses Expo Go for development" warning is harmless for this
+project (it has no custom native code); suppress it with
+`EAS_BUILD_NO_EXPO_GO_WARNING=true` if it bothers you.
+
 ## Configuration notes
 
 - **App identity** is set in `app.json`: name, `com.bassir.allinone` bundle
