@@ -22,6 +22,34 @@ function safeEqual(a, b) {
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
+// Bearer-token auth for API clients that can't (or shouldn't) rely on a
+// cookie jar, e.g. the mobile app: login once, store the token, send it as
+// `Authorization: Bearer <token>` on every request. Same in-memory lifetime
+// as the web session store — a restart invalidates every token too.
+const TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const tokenStore = new Map(); // token -> { createdAt }
+
+function bearerToken(req) {
+  const match = /^Bearer\s+(.+)$/i.exec(req.headers.authorization || '');
+  return match ? match[1] : null;
+}
+
+function isValidToken(token) {
+  if (!token) return false;
+  const entry = tokenStore.get(token);
+  if (!entry) return false;
+  if (Date.now() - entry.createdAt > TOKEN_TTL_MS) {
+    tokenStore.delete(token);
+    return false;
+  }
+  return true;
+}
+
+function isAuthenticated(req) {
+  if (req.session && req.session.authenticated) return true;
+  return isValidToken(bearerToken(req));
+}
+
 const CLICK_RETENTION_DAYS = 365;
 const STATUS_CACHE_MS = 60 * 1000;
 const STATUS_TIMEOUT_MS = 6000;
@@ -195,6 +223,15 @@ setInterval(takeSnapshots, SNAPSHOT_INTERVAL_MS);
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 
+// Allow the mobile app (and any other origin) to call the API.
+app.use('/api', (req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 app.use(session({
   secret: SESSION_SECRET,
   resave: false,
@@ -202,10 +239,10 @@ app.use(session({
   cookie: { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 }
 }));
 
-const PUBLIC_PATHS = new Set(['/login.html', '/api/login']);
+const PUBLIC_PATHS = new Set(['/login.html', '/api/login', '/api/auth/login', '/api/health']);
 
 app.use((req, res, next) => {
-  const authed = req.session && req.session.authenticated;
+  const authed = isAuthenticated(req);
   if (authed && req.path === '/login.html') return res.redirect('/');
   if (authed) return next();
   if (PUBLIC_PATHS.has(req.path)) return next();
@@ -214,6 +251,13 @@ app.use((req, res, next) => {
   return res.redirect(`/login.html?next=${encodeURIComponent(req.originalUrl)}`);
 });
 
+// Unauthenticated — lets the mobile app's "enter server URL" screen confirm
+// the address it was given is actually a Bassir All-in-One server.
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, name: 'Bassir All-in-One', time: Date.now() });
+});
+
+// Web login (browser) — cookie session, used by the dashboard's login page.
 app.post('/api/login', (req, res) => {
   const username = String((req.body || {}).username || '');
   const password = String((req.body || {}).password || '');
@@ -228,16 +272,26 @@ app.post('/api/logout', (req, res) => {
   req.session.destroy(() => res.json({ ok: true }));
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Allow the mobile app (and any other origin) to call the API.
-app.use('/api', (req, res, next) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
+// Mobile / API login — same credentials, returns a bearer token instead of
+// a cookie. Send it back as `Authorization: Bearer <token>` on every call.
+app.post('/api/auth/login', (req, res) => {
+  const username = String((req.body || {}).username || '');
+  const password = String((req.body || {}).password || '');
+  if (!safeEqual(username, AUTH_USERNAME) || !safeEqual(password, AUTH_PASSWORD)) {
+    return res.status(401).json({ error: 'Invalid username or password.' });
+  }
+  const token = crypto.randomBytes(32).toString('hex');
+  tokenStore.set(token, { createdAt: Date.now() });
+  res.json({ ok: true, token, expiresIn: Math.floor(TOKEN_TTL_MS / 1000) });
 });
+
+app.post('/api/auth/logout', (req, res) => {
+  const token = bearerToken(req);
+  if (token) tokenStore.delete(token);
+  res.json({ ok: true });
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 function publicSystem(s) {
   const clicks = db.clicks.filter((c) => c.systemId === s.id);

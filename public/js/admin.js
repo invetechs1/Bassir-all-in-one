@@ -65,7 +65,8 @@ function iconEl(system) {
   const el = document.createElement('div');
   el.className = 'system-icon';
   el.style.background = system.color || '#2a78d6';
-  if (/^https?:\/\//i.test(system.icon || '') || (system.icon || '').startsWith('data:image')) {
+  const icon = system.icon || '';
+  if (/^https?:\/\//i.test(icon) || icon.startsWith('data:image') || icon.startsWith('/')) {
     const img = document.createElement('img');
     img.src = system.icon;
     img.alt = '';

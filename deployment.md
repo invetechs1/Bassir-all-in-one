@@ -95,10 +95,13 @@ ssh root@13.140.138.252 "chmod +x /opt/bassir-all-in-one/deploy.sh"
 ssh root@13.140.138.252 "/opt/bassir-all-in-one/deploy.sh"
 ```
 
-Portal will be reachable at `http://13.140.138.252:3007`. Port 3000 is
-already used by another app on this server (`zahra-travel-app-1`), so
-3007 was picked instead; adjust with `PORT=xxxx /opt/bassir-all-in-one/deploy.sh`
-if you need a different port later.
+Portal will be reachable at `http://13.140.138.252:3007` directly, and at
+`https://bassirfarm.bassir.net` through the nginx reverse proxy + TLS cert
+already configured on the server (proxies to the same `:3007` container —
+nothing to change here when that's updated). Port 3000 is already used by
+another app on this server (`zahra-travel-app-1`), so 3007 was picked
+instead; adjust with `PORT=xxxx /opt/bassir-all-in-one/deploy.sh` if you
+need a different port later.
 
 ## Re-deploying later (new code changes)
 
