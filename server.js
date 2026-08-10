@@ -118,11 +118,11 @@ function normalizeMetrics(raw) {
     },
     kpis: Array.isArray(raw.kpis)
       ? raw.kpis.slice(0, 24).map((k) => ({
-          key: String(k.key || '').slice(0, 60),
-          label: String(k.label || k.key || '').slice(0, 80),
-          value: typeof k.value === 'number' && isFinite(k.value) ? k.value : String(k.value ?? '').slice(0, 60),
-          unit: String(k.unit || '').slice(0, 20)
-        }))
+        key: String(k.key || '').slice(0, 60),
+        label: String(k.label || k.key || '').slice(0, 80),
+        value: typeof k.value === 'number' && isFinite(k.value) ? k.value : String(k.value ?? '').slice(0, 60),
+        unit: String(k.unit || '').slice(0, 20)
+      }))
       : []
   };
 }
@@ -229,6 +229,15 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Allow the mobile app (and any other origin) to call the API.
+app.use('/api', (req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 
 function publicSystem(s) {
   const clicks = db.clicks.filter((c) => c.systemId === s.id);
