@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -7,6 +8,19 @@ const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 const SEED_FILE = path.join(__dirname, 'seed', 'systems.json');
+
+const AUTH_USERNAME = process.env.AUTH_USERNAME || 'Yahya';
+const AUTH_PASSWORD = process.env.AUTH_PASSWORD || 'Bassir@2030';
+// Regenerated on every restart — sessions are in-memory anyway, so a restart
+// already invalidates everyone; this just avoids hardcoding a secret in source.
+const SESSION_SECRET = crypto.randomBytes(32).toString('hex');
+
+function safeEqual(a, b) {
+  const bufA = Buffer.from(String(a));
+  const bufB = Buffer.from(String(b));
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 const CLICK_RETENTION_DAYS = 365;
 const STATUS_CACHE_MS = 60 * 1000;
@@ -180,6 +194,40 @@ setInterval(takeSnapshots, SNAPSHOT_INTERVAL_MS);
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
+
+app.use(session({
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { httpOnly: true, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 }
+}));
+
+const PUBLIC_PATHS = new Set(['/login.html', '/api/login']);
+
+app.use((req, res, next) => {
+  const authed = req.session && req.session.authenticated;
+  if (authed && req.path === '/login.html') return res.redirect('/');
+  if (authed) return next();
+  if (PUBLIC_PATHS.has(req.path)) return next();
+  if (req.path.startsWith('/css/') || req.path.startsWith('/js/')) return next();
+  if (req.path.startsWith('/api/')) return res.status(401).json({ error: 'Not authenticated.' });
+  return res.redirect(`/login.html?next=${encodeURIComponent(req.originalUrl)}`);
+});
+
+app.post('/api/login', (req, res) => {
+  const username = String((req.body || {}).username || '');
+  const password = String((req.body || {}).password || '');
+  if (safeEqual(username, AUTH_USERNAME) && safeEqual(password, AUTH_PASSWORD)) {
+    req.session.authenticated = true;
+    return res.json({ ok: true });
+  }
+  res.status(401).json({ error: 'Invalid username or password.' });
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => res.json({ ok: true }));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Allow the mobile app (and any other origin) to call the API.
