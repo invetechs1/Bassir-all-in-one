@@ -6,7 +6,7 @@ import { Card, Button } from '../components';
 
 export default function LoginScreen({ onLogin }) {
   const t = useTheme();
-  const [url, setUrl] = useState('http://13.140.138.252:3007/');
+  const [url, setUrl] = useState('https://bassirfarm.bassir.net/');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ export default function LoginScreen({ onLogin }) {
         <TextInput
           value={url}
           onChangeText={setUrl}
-          placeholder="http://13.140.138.252:3007/"
+          placeholder="https://bassirfarm.bassir.net/"
           placeholderTextColor={t.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
