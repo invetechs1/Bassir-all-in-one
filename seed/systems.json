@@ -1,35 +1,35 @@
 [
   {
     "name": "Bassir Stock System",
-    "url": "http://13.140.138.252:8085/",
+    "url": "https://stock-system.bassir.net/",
     "icon": "📦",
     "description": "Stock and inventory management across all warehouses.",
     "color": "#2a78d6"
   },
   {
     "name": "Bassir BOQ & Project Tracking",
-    "url": "http://13.140.138.252:3005/",
+    "url": "https://boq.bassir.net/",
     "icon": "🏗️",
     "description": "Bill of quantities and project tracking for ongoing projects.",
     "color": "#eb6834"
   },
   {
     "name": "Bassir Technical & Financial Proposal",
-    "url": "http://13.140.138.252:8003/",
+    "url": "https://pricing-system.bassir.net/",
     "icon": "/images/bassir-financial-proposal-logo.png",
     "description": "Technical and financial proposals, including pricing.",
     "color": "#1baf7a"
   },
   {
     "name": "Bassir Employee Training System",
-    "url": "http://13.140.138.252:3860/",
+    "url": "https://bassir-ets.bassir.net/",
     "icon": "🎓",
     "description": "Employee training courses and progress tracking.",
     "color": "#7c4dff"
   },
   {
     "name": "Bassir Hiring System",
-    "url": "http://13.140.138.252:8083/",
+    "url": "https://hiring-system.bassir.net/",
     "icon": "🤝",
     "description": "Recruitment and hiring pipeline management.",
     "color": "#c9a227"
@@ -47,5 +47,12 @@
     "icon": "📣",
     "description": "Social media management for all Bassir companies.",
     "color": "#06b6d4"
+  },
+  {
+    "name": "Bassir Expense Tracker",
+    "url": "https://yahexp.bassir.net/",
+    "icon": "💰",
+    "description": "Track and manage company expenses.",
+    "color": "#009688"
   }
 ]
