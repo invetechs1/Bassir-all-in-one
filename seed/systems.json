@@ -54,5 +54,33 @@
     "icon": "💰",
     "description": "Track and manage company expenses.",
     "color": "#009688"
+  },
+  {
+    "name": "Al Arab Regulation AI",
+    "url": "http://13.140.138.252:8080",
+    "icon": "⚖️",
+    "description": "AI-powered regulatory compliance and code review.",
+    "color": "#8e24aa"
+  },
+  {
+    "name": "Aqar Mudar",
+    "url": "http://13.140.138.252:8091/",
+    "icon": "🏠",
+    "description": "Real estate property management platform.",
+    "color": "#3f51b5"
+  },
+  {
+    "name": "Business Loop",
+    "url": "https://business-loop.bassir.net/",
+    "icon": "🔄",
+    "description": "Business workflow and process management.",
+    "color": "#fbc02d"
+  },
+  {
+    "name": "Social Media System (Brand Pro)",
+    "url": "http://13.140.138.252:3004/",
+    "icon": "📱",
+    "description": "Social media management and brand content.",
+    "color": "#ec407a"
   }
 ]
